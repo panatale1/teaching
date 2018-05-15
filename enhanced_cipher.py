@@ -112,11 +112,33 @@ class CipherMachine(object):
                 add_ons = [0 for i in range(self.key)]
                 if leftovers > self.key:  # We have more than half an extra cycle
                     add_ons = [1 for i in range(self.key)]
+                    leftovers -= sum(add_ons)
+                    for i in range(self.key - 2, 0, -1):
+                        add_ons[i] += 1
+                        leftovers -= 1
+                        if leftovers == 0:
+                            break
                 else:  # just add 1s where needed
-
+                    for i in range(self.key):
+                        add_ons[i] += 1
+                        leftovers -= 1
+                        if leftovers == 0:
+                            break
                 if len(indices) > len(self.message):
                     indices = indices[:len(self.message)]
-                
+                message = self.message
+                for i in range(self.key):
+                    substring = (2 * full_cycles) + add_ons[i]
+                    if i == 0:
+                        substring = full_cycles + add_ons[i]
+                        rails.append(list(message[:substring]))
+                    elif substring > len(message):
+                        rails.append(list(message))
+                    else:
+                        rails.append(list(message[:substring]))
+                    message = message[substring:]
+                for i in indices:
+                    self.translated += rails[i].pop(0)
         else:
             for i in range(len(self.message)):
                 symbol_index = SYMBOLS.find(self.message[i])
