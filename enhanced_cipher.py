@@ -1,3 +1,4 @@
+from copy import deepcopy
 from random import seed, shuffle
 from string import digits, letters, punctuation
 
@@ -17,14 +18,18 @@ class CipherMachine(object):
         while True:
             print 'Which cipher would you like to use?'
             cipher = raw_input().lower()
-            if cipher in ['caesar', 'c', 'shift', 's', 'vigenere', 'v', 'substitution', 'u', 'zigzag', 'z']:
+            if cipher in ['caesar', 'c', 'shift', 's', 'vigenere', 'v', 'substitution', 'u', 'zigzag', 'z', 'a', 'atbash']:
                 self.cipher = cipher
                 break
             else:
-                print 'Enter either "(C)aesar", "(S)hift", "S(u)bstitution", "(V)igenere", or "(Z)igzag".'
+                print 'Enter either "(A)tbash, (C)aesar", "(S)hift", "S(u)bstitution", "(V)igenere", or "(Z)igzag".'
         if self.cipher[0] == 'c':
             # Caesar Cipher is a specific shift of 3
             self.key = [3 * self.mode]
+        if self.cipher[0] == 'a':
+            # Atbash cipher is a specific substitution cipher case
+            self.key = list(SYMBOLS)
+            self.key.reverse()
 
     def get_mode(self):
         while True:
@@ -79,81 +84,89 @@ class CipherMachine(object):
                     SYMBOLS.find(symbol) * self.mode
                 )
 
-    def translate(self):
-        if self.cipher in ['substitution', 'u']:
-            pairing_list = zip(list(SYMBOLS), self.key)
-            if self.mode == 1:  # encryption mode
-                cipher_dict = {pair[0]: pair[1] for pair in pairing_list}
-            else:
-                cipher_dict = {pair[1]: pair[0] for pair in pairing_list}
-            for symbol in self.message:
-                self.translated += cipher_dict[symbol]
-        elif self.cipher in ['zigzag', 'z']:
-            rails = []
-            indices = []
-            for i in range(self.key):
-                indices.append(i)
-            while len(indices) < len(self.message):
-                for i in range(self.key - 2, -1, -1):
-                    indices.append(i)
-                for i in range(1, self.key):
-                    indices.append(i)
-            if self.mode == 1:
-                for i in range(self.key):
-                    rails.append([])
-                for i in range(len(self.message)):
-                    rails[indices[i]].append(self.message[i])
-                self.translated = ''.join([''.join(rail) for rail in rails])
-            else:
-                cycle = (self.key * 2) - 2
-                full_cycles = len(self.message) / cycle
-                leftovers = len(self.message) % cycle
-                # Leftovers must be at least one less than a full cycle
-                add_ons = [0 for i in range(self.key)]
-                if leftovers > self.key:  # We have more than half an extra cycle
-                    add_ons = [1 for i in range(self.key)]
-                    leftovers -= sum(add_ons)
-                    for i in range(self.key - 2, 0, -1):
-                        add_ons[i] += 1
-                        leftovers -= 1
-                        if leftovers == 0:
-                            break
-                else:  # just add 1s where needed
-                    for i in range(self.key):
-                        add_ons[i] += 1
-                        leftovers -= 1
-                        if leftovers == 0:
-                            break
-                if len(indices) > len(self.message):
-                    indices = indices[:len(self.message)]
-                message = self.message
-                for i in range(self.key):
-                    substring = (2 * full_cycles) + add_ons[i]
-                    if i == 0:
-                        substring = full_cycles + add_ons[i]
-                        rails.append(list(message[:substring]))
-                    elif substring > len(message):
-                        rails.append(list(message))
-                    else:
-                        rails.append(list(message[:substring]))
-                    message = message[substring:]
-                for i in indices:
-                    self.translated += rails[i].pop(0)
+    def do_substitution(self):
+        pairing_list = zip(list(SYMBOLS), self.key)
+        if self.mode == 1:  # encryption mode
+            cipher_dict = {pair[0]: pair[1] for pair in pairing_list}
         else:
+            cipher_dict = {pair[1]: pair[0] for pair in pairing_list}
+        for symbol in self.message:
+            self.translated += cipher_dict[symbol]
+
+    def do_zig_zag(self):
+        rails = []
+        indices = []
+        for i in range(self.key):
+            indices.append(i)
+        while len(indices) < len(self.message):
+            for i in range(self.key - 2, -1, -1):
+                indices.append(i)
+            for i in range(1, self.key):
+                indices.append(i)
+        if self.mode == 1:
+            for i in range(self.key):
+                rails.append([])
             for i in range(len(self.message)):
-                symbol_index = SYMBOLS.find(self.message[i])
-                translated_symbol_index = symbol_index + self.key[i % len(self.key)]
-                if translated_symbol_index >= MAX_KEY_SIZE:
-                    translated_symbol_index %= MAX_KEY_SIZE
-                elif translated_symbol_index <= -MAX_KEY_SIZE:
-                    translated_symbol_index += MAX_KEY_SIZE
-                self.translated += SYMBOLS[translated_symbol_index]
+                rails[indices[i]].append(self.message[i])
+            self.translated = ''.join([''.join(rail) for rail in rails])
+        else:
+            cycle = (self.key * 2) - 2
+            full_cycles = len(self.message) / cycle
+            leftovers = len(self.message) % cycle
+            add_ons = [0 for i in range(self.key)]
+            if leftovers > self.key:  # We have more than half an extra cycle
+                add_ons = [1 for i in range(self.key)]
+                leftovers -= sum(add_ons)
+                for i in range(self.key - 2, 0, -1):
+                    add_ons[i] += 1
+                    leftovers -= 1
+                    if leftovers == 0:
+                        break
+            else:  # Add 1s as needed
+                for i in range(self.key):
+                    add_ons[i] += 1
+                    leftovers -= 1
+                    if leftovers == 0:
+                        break
+            if len(indices) > len(self.message):
+                indices = indices[:len(self.message)]
+            message = self.message
+            for i in range(self.key):
+                substring = (2 * full_cycles) + add_ons[i]
+                if i == 0:
+                    substring = full_cycles + add_ons[i]
+                    rails.append(list(message[:substring]))
+                elif substring > len(message):
+                    rails.append(list(message))
+                else:
+                    rails.append(list(message[:substring]))
+                message = message[substring:]
+            for i in indices:
+                self.translated += rails[i].pop(0)
+
+    def translate(self):
+        if self.cipher in ['substitution', 'u', 'atbash', 'a']:
+            self.do_substitution()
+        elif self.cipher in ['zigzag', 'z']:
+            self.do_zig_zag()
+        else:
+            self.do_shift()
+
+    def do_shift(self):
+        for i in range(len(self.message)):
+            symbol_index = SYMBOLS.find(self.message[i])
+            translated_symbol_index = symbol_index + self.key[i % len(self.key)]
+            if translated_symbol_index >= MAX_KEY_SIZE:
+                translated_symbol_index %= MAX_KEY_SIZE
+            elif translated_symbol_index <= -MAX_KEY_SIZE:
+                translated_symbol_index += MAX_KEY_SIZE
+            self.translated += SYMBOLS[translated_symbol_index]
 
     def run(self):
         self.get_mode()
         self.get_cipher()
         self.get_message()
-        if self.cipher[0] != 'c':
+        if self.cipher[0] not in ['a', 'c']:
             self.get_key()
         self.translate()
         print 'Your translated text is:'
