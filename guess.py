@@ -4,7 +4,8 @@ print "Hello! What is your name?"
 my_name = raw_input()
 
 number = randint(1, 20)
-print "Well, {}, I am thinking of a number between 1 and 20".format(my_name)
+print "Hi, " + my_name
+print "I am thinking of a number between 1 and 20"
 
 guess_num = 1
 while guess_num < 7:
@@ -20,12 +21,8 @@ while guess_num < 7:
 
 if guess == number:
     if guess_num == 1:
-        print 'Good job, {0}! You guessed my number in {1} guess!'.format(
-            my_name, guess_num
-        )
+        print 'Good job! You guessed my number in 1 guess!'
     else:
-        print 'Good job, {0}! You guessed my number in {1} guesses!'.format(
-            my_name, guess_num
-        )
+        print 'Good job! You guessed my number in ' + str(guess_num) + '  guesses!'
 else:
-    print "Nope. The number I was thinking of was {}".format(number)
+    print "Nope. The number I was thinking of was " + str(number)
