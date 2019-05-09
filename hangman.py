@@ -46,7 +46,10 @@ words = {
  skunk sloth snake spider stork swan tiger toad trout turkey turtle
  weasel whale wolf wombat zebra'''.split(),
     'Colors': 'red orange yellow green blue indigo violet teal aqua peach brown black white grey'.split(),
-    'Shapes': 'square circle hexagon rectangle pentagon octagon triangle cube sphere cylinder pyramid tetrahedron prism'.split(),
+    'Shapes': '''square circle hexagon rectangle pentagon octagon triangle
+ cube sphere cylinder pyramid tetrahedron prism ellipse rhombus trapezoid chevron'''.split(),
+    'Fruits': '''apple orange lemon lime pear watermelon grape grapefruit cherry
+ banana cantaloupe mango strawberry tomato pineapple tangerine apricot peach'''.split()
 }
 
 def get_random_word(word_dict):
