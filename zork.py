@@ -40,7 +40,7 @@ while True:
 			print("Welcome to the Unofficial Python Version of Zork. Your mission is to find a Jade Statue.")
 		else:
 			print("---------------------------------------------------------")
-	
+
 
 	# Southwest Loop
 	while loop == 8:
@@ -62,7 +62,7 @@ while True:
 			loop = 9
 		else:
 			print("---------------------------------------------------------")
-	
+
 
 	# East Loop and Grating Input
 	while loop == 9:
@@ -78,7 +78,7 @@ while True:
 		elif grating_inp.lower() == ("descend grating"):
 			loop = 10
 		else:
-			print("---------------------------------------------------------")	
+			print("---------------------------------------------------------")
 
 
 	# Grating Loop and Cave Input
@@ -135,7 +135,7 @@ while True:
 			print("You have found the Jade Statue and have completed your quest!")
 		else:
 			print("---------------------------------------------------------")
-		
+
 		# Exit loop at the end of game
 		exit_inp = input("Do you want to continue? Y/N ")
 		if exit_inp.lower() == ("n"):
