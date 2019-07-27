@@ -43,10 +43,10 @@ words = '''ant baboon badger bat bear beaver camel cat clam cobra cougar
  lion lizard llama mole monkey moose mouse mule newt otter owl panda
  parrot pigeon python rabbit ram rat raven rhino salmon seal shark sheep
  skunk sloth snake spider stork swan tiger toad trout turkey turtle
- weasel whale wolf wombat zebra'''.split(),
+ weasel whale wolf wombat zebra'''.split()
 
 
-def get_random_word(word_lilst):
+def get_random_word(word_list):
     print('Your category is Animals')
     return sample(word_list, 1)[0]
 
