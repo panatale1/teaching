@@ -54,13 +54,13 @@ words = {
 
 def get_random_word(word_dict):
     print('Would you like a random category?')
-    if input().lower().startswith('y'):
+    if raw_input().lower().startswith('y'):
         category = sample(word_dict.keys(), 1)[0]
         print('Your random category is: {}'.format(category))
         return sample(word_dict[category], 1)[0]
     else:
         print('Your categories are: {}'.format(sorted(word_dict.keys())))
-        category = input().title()
+        category = raw_input().title()
         print('You have selected {}.'.format(category))
         return sample(word_dict[category], 1)[0]
 
@@ -73,12 +73,12 @@ def found_all_letters(secret_word, correct_letters):
 
 def play_again():
     print('Would you like to play again? (yes or no)')
-    return input().lower().startswith('y')
+    return raw_input().lower().startswith('y')
 
 def get_guess(already_guessed):
     while True:
         print('Guess a letter.')
-        guess = input().lower()
+        guess = raw_input().lower()
         if len(guess) != 1:
             print('Please enter a single letter.')
         elif guess in already_guessed:
@@ -90,13 +90,13 @@ def get_guess(already_guessed):
 
 def display_board(missed_letters, correct_letters, secret_word, blanks):
     print(HANGMAN_PICS[len(missed_letters)])
-    print()
-    print('Missed letters:', end=' ')
+    print('\n')
+    print('Missed letters: ')
     print(' '.join(missed_letters))
-    print()
+    print('\n')
     print(' '.join(blanks))
-    print()
-    
+    print('\n')
+
 
 print('H A N G M A N')
 missed_letters = []
